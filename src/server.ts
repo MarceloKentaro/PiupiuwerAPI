@@ -1,13 +1,14 @@
-import { request } from "http";
-
-import express from 'express';
+import 'reflect-metadata';
+import './database';
+import routes from './routes/index';
+const express = require('express');
+const bodyParser = require('body-parser');
+var cors = require('cors')
 
 const app = express();
+const port = 3333;
 
-app.get('/projects', (request, response) => {
-    return response.json({message:'Hello World'})
-});
-
-app.listen(3333, () =>{
-    console.log('👀 Server started on port 3333!')
-});
+app.use(cors())
+app.use(bodyParser.json());
+app.use(routes);
+app.listen(port, () => console.log(`Running on port ${port}`));

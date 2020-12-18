@@ -1,22 +1,48 @@
 import {Router} from 'express';
-import routes from '.';
+import { getRepository } from 'typeorm';
+import User from '../models/User';
+import CreateUser from '../services/CreateUser';
 
 const usersRouter = Router();
 
-const users = [];
 
-usersRouter.post('/', (request, response) =>{
-    const {username, password} = request.body
+usersRouter.get('/', async(request, response) =>{
+    try{
+        const user = request.body;
 
-    const user = {
-        id: uuid(),
-        username,
-        password
+        const createUser = getRepository(User);
+
+        const newUser = await createUser.find();
+
+
+        return response.json(newUser);
+
+    } catch(err){
+        return response.status(400).json({error: err.message});
     }
-    
-    users.push(user)
+    });
 
-    return response.json({message: 'Its working'});
-});
+usersRouter.post('/', async(request, response) =>{
+    try{
+        const user = request.body;
+
+        const createUser = new CreateUser();
+
+        const newUser = await createUser.execute(user);
+
+        const userWithoutPassword = {
+            id: newUser.id,
+            username: newUser.username,
+            message: newUser.message,
+            image: newUser.image,
+            date: newUser.date,
+          };
+
+        return response.json(userWithoutPassword);
+
+    } catch(err){
+        return response.status(400).json({error: err.message});
+    }
+    });
 
 export default usersRouter;
